@@ -1,7 +1,10 @@
 ﻿Clear-Host;Remove-Module MyModule*; Import-Module '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules/MyModules'
 
 ############################
+#--- Install PlatyPS
+Install-Module platyPS -Force
 
+# List of modules ti import
 $ModuleList = @()
 $ModuleList += '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules/MyModules'
 $ModuleList += 'PlatyPS'

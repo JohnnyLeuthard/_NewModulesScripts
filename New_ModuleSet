@@ -24,11 +24,11 @@ $RequiredModules += 'psPAS'
 If(!(Test-Path $NewModFolder ))
 { 
     #write-Host "MOD Folder Missing" -ForegroundColor DarkYellow 
-    New-Item -Path "$NewModFolder" -ItemType Directory -Force | Out-Null
-    New-Item -Path "$NewModFolder\en-us" -ItemType Directory -Force | Out-Null
-    New-Item -Path "$NewModFolder\public\Functions" -ItemType Directory -Force | Out-Null
-    New-Item -Path "$NewModFolder\private\Functions" -ItemType Directory -Force | Out-Null
-    New-Item -Path "$NewModFolder\classes" -ItemType Directory -Force | Out-Null
+    New-Item -Path "$NewModFolder"                      -ItemType Directory -Force | Out-Null
+    New-Item -Path "$NewModFolder\en-us"                -ItemType Directory -Force | Out-Null
+    New-Item -Path "$NewModFolder\public\Functions"     -ItemType Directory -Force | Out-Null
+    New-Item -Path "$NewModFolder\private\Functions"    -ItemType Directory -Force | Out-Null
+    New-Item -Path "$NewModFolder\classes"              -ItemType Directory -Force | Out-Null
     
 }
 
@@ -48,8 +48,8 @@ $ManafestDetails = @{
 #    'FilList'              = 'EnvironmentVariables.xml'
 #    'ScriptToProcess'      = '__startup.ps1'
 #    'DefaultCommandPrefix'  = 'JEL'
-    'AliasesToExport'       = '*'
-#    'CLRVersion'            = '5.1'
+#    'AliasesToExport'       = '*'
+    'CLRVersion'            = '5.1'
     'Copyright'             = (($DateInfo.year).tostring() + ' '  + $ModuleDescription + ' by ' +  $Author)
 }
 New-ModuleManifest @ManafestDetails
@@ -133,7 +133,7 @@ $StartupFileContents | Out-File "$NewModFolder\__startup.ps1" -Encoding utf8 -Fo
 #  Create Misc Files
 #------------------------------
 
-#- Basic GIT foles
+#- Basic GIT files
 New-Item -Path "$NewModFolder\readme.MD" -ItemType File -Force | Out-Null
 New-Item -Path "$NewModFolder\TODO.MD"   -ItemType File -Force | Out-Null
 #New-Item -Path "$NewModFolder\.gitignore"   -ItemType File -Force | Out-Null
@@ -169,4 +169,11 @@ $DestTestFile = "$NewModFolder\public\Functions"
 $SourceTestFileList  | % {Copy-Item $_ $DestTestFile }
 
 #---
+
+
+#------------------------------
+#  GIT Stuff
+#------------------------------
+Set-Location $NewModFolder 
+Git INIT
 
