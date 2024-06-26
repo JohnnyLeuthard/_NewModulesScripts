@@ -14,9 +14,11 @@ $RequiredModules = @()
 $RequiredModules += 'MyModules2'
 $RequiredModules += 'PlatyPS'
 $RequiredModules += 'psPAS'
-
 #---
-
+$RequiredFilesList = @()
+$RequiredFilesList += 'dummy.json'
+$RequiredFilesList += './files/dummy2.json'
+#$RequiredFilesList += './files/EnvironmentVariables.xml'
 
 #------------------------------
 #  Create Misc Folders
@@ -29,6 +31,7 @@ If(!(Test-Path $NewModFolder ))
     New-Item -Path "$NewModFolder\public\Functions"     -ItemType Directory -Force | Out-Null
     New-Item -Path "$NewModFolder\private\Functions"    -ItemType Directory -Force | Out-Null
     New-Item -Path "$NewModFolder\classes"              -ItemType Directory -Force | Out-Null
+    New-Item -Path "$NewModFolder\files"                -ItemType Directory -Force | Out-Null
     
 }
 
@@ -45,8 +48,8 @@ $ManafestDetails = @{
     'ModuleVersion'         = '1.0'
     'GUID'                  = New-Guid
     'CompanyName'           = 'Contoso'
-#    'FilList'              = 'EnvironmentVariables.xml'
-#    'ScriptToProcess'      = '__startup.ps1'
+    'FileList'             = $RequiredFilesList
+    'ScriptsToProcess'     = '__startup.ps1'
 #    'DefaultCommandPrefix'  = 'JEL'
 #    'AliasesToExport'       = '*'
     'CLRVersion'            = '5.1'
@@ -119,8 +122,10 @@ $PSM1FileContents | Out-File "$NewModFolder/$NewModuleName.psm1" -Encoding utf8
 #  Create __startup.ps1
 #------------------------------
 $StartupFileContents = @'
-    $RequiredFiles = ((Get-Module $NewModFolder -ListAvailable).Filelist)
-    
+
+    #$RequiredFiles = ((Get-Module $NewModFolder -ListAvailable).Filelist)
+    $RequiredFiles = ((Get-Module $moduleName).Filelist)  ##??
+        
     $RequiredFiles | % {
         If (-not (Test-Path $_ -Pathtype Leaf)) {
             Write-Warning "****** The file [$($_)] does not exsist and is listed in the required files for this module. please correct the problem and reliad the module ****** "  
