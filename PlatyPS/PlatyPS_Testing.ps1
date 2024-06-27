@@ -4,24 +4,26 @@ $ModuleName     = 'MyModules'
 $ModBaseFolder  = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules'
 $ModuleFolder   = "$ModBaseFolder\$ModuleName"
 
+Set-Location $ModuleFolder
 ############################
 #--- Install PlatyPS
-Install-Module platyPS -Force
+#  Install-Module platyPS -Force
 
 # List of modules tO import
 $ModuleList = @()
 $ModuleList += $ModuleFolder
 $ModuleList += 'PlatyPS'
+
 Import-Module $ModuleList
 #- OR
 Clear-Host;Remove-Module $ModuleName; Import-Module $ModuleFolder
 
+Get-Module 
 ############################
 Get-Module
 Get-Command -Module platyPS
 
 Clear-Host; Remove-Module $ModuleName; Import-Module $ModuleFolder  
-
 Get-Module 
 Get-Command -Module $ModuleName 
 
@@ -40,16 +42,19 @@ $XMLFilePath    = "$OutputPath\XML"
 
 
 #--- Create MD files for every function
-New-MarkdownHelp -Module $ModuleName -OutputFolder $MDFilePath -Force
+New-MarkdownHelp -Module $ModuleName -OutputFolder $MDFilePath -Force 
 #**** OR ***
 #- Create MD file for an individule command
 New-MarkdownHelp -Command Convert-EPOCHDateTime -OutputFolder $MDFilePath -Force
 
 
 #--- Update MD's
-Remove-Module $ModuleList
-Import-Module $ModuleList
+Remove-Module $ModuleName
+Import-Module $ModuleFolder
+Get-Module
+
 Update-MarkdownHelp -Path $MDFilePath -Force  ##??
+
 
 ########################################################
 
@@ -69,7 +74,7 @@ $AboutFileName | ForEach-Object {New-MarkdownAboutHelp -OutputFolder $MDFilePath
 
 
 ########################################################
-### create an external help file (XML) from MD
+### create an external help file  (XML) from MD
 ########################################################
 <#
     When using get-help this will override the comment based help 
@@ -83,6 +88,15 @@ New-ExternalHelp -Path "$MDFilePath\Convert-EPOCHDateTime.md" -OutputPath $Outpu
 New-ExternalHelp -Path "$MDFilePath" -OutputPath $OutputPath
 
 
+
+########################################################
+### 
+########################################################
+
+
+
+
+
 ########################################################
 ### 
 ########################################################
@@ -94,12 +108,17 @@ New-ExternalHelp -Path "$MDFilePath" -OutputPath $OutputPath
 ########################################################
 <#
 
+# PlatyPS: PowerShell Help meets Markdown by Sergei Vorobev ****
 https://www.youtube.com/watch?v=zGOl5g_AJ5U
 
+# Build Beautiful Documentation with platyPS and Material for MkDocs by Josh Hendricks
 https://www.youtube.com/watch?v=27KksfgzhuE
 
+# Build Beautiful Docs using PlatyPS and MKDocs with Josh Hendricks
 https://www.youtube.com/watch?v=svqPt3jEPyY
 
+# MD Schema
+https://github.com/PowerShell/platyPS/blob/master/platyPS.schema.md
 
 
 #>

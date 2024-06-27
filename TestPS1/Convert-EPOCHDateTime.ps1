@@ -8,7 +8,10 @@ Function Convert-EPOCHDateTime
   .DESCRIPTION
     Convert EPOCH time to local time
   .Parameter InputTime
-    The EPOCH time to converte
+    The EPOCH time to convert
+
+  .Parameter UpdatedParam
+    Testing update MD
 
   .EXAMPLE
     Convert-EPOCHDateTime -InputTime -9147600
@@ -18,8 +21,13 @@ Function Convert-EPOCHDateTime
   .EXAMPLE
     -9147600,1539613448,1529604105 | Convert-EPOCHDateTime
 
+  .INPUTS
+
+  .OUTPUTS
+    PSObject
 
   .LINK
+    https://github.com/JohnnyLeuthard/_NewModulesScripts/blob/main/Convert-EPOCHDateTime.MD
 
   .NOTES
     Author: Johnny Leuthard
@@ -28,9 +36,12 @@ Function Convert-EPOCHDateTime
   [CmdletBinding(SupportsShouldProcess,DefaultParameterSetName = 'None')]
   Param
   (
-    [Parameter(Position = 0, ValueFromPipeline, Mandatory)]
+    [Parameter(Position=0, ValueFromPipeline, Mandatory)]
     [ValidateNotNullOrEmpty()]
-    $InputTime
+      $InputTime,
+    [Parameter(ValueFromPipeline)]
+      $UpdatedParam
+    
   )
   Begin
   {
@@ -64,5 +75,4 @@ Function Convert-EPOCHDateTime
 Convert-EPOCHDateTime -InputTime '1636112341'
 
 #>
-
 

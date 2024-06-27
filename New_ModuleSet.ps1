@@ -2,11 +2,10 @@
 $DateInfo = Get-Date 
 #---
 $ModuleName             = 'MyModules'
-$ModBaseFolder          = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules'
+$ModBaseFolder          = '\Users\johnnyleuthard\Clouds\OneDrive\Coding\POSHModules'
 $ModuleFolder           = "$ModBaseFolder\$ModuleName"
 $ModuleDescription      = 'Custom PowerShell tools'
 $Author                 = 'Johnny Leuthard'
-
 
 #---
 $NestedModules = @()
@@ -24,8 +23,8 @@ $RequiredModules += 'PlatyPS'
 #---
 $RequiredFilesList = @()
 $RequiredFilesList += 'dummy.json'
-$RequiredFilesList += './files/dummy2.json'
-#$RequiredFilesList += './files/EnvironmentVariables.xml'
+$RequiredFilesList += '.\files\dummy2.json'
+#$RequiredFilesList += '.\files\EnvironmentVariables.xml'
 
 #------------------------------
 #  Create Misc Folders
@@ -82,7 +81,7 @@ $privateFunctionsPath   = $PSScriptRoot + $directorySeparator + 'Private' + $dir
 $currentManifest        = Test-ModuleManifest $moduleManifest
 
 $aliases = @()
-$publicFunctions = Get-ChildItem -Path $GLOBAL:publicFunctionsPath -Recurse | Where-Object { ($_Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
+$publicFunctions        = Get-ChildItem -Path $GLOBAL:publicFunctionsPath -Recurse | Where-Object { ($_Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
 $privateFunctions       = Get-ChildItem -Path $privateFunctionsPath -Recurse | Where-Object { ($_Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
 $publicFunctions | ForEach-Object { . $_.FullName }
 $privateFunctions | ForEach-Object { . $_.FullName }
@@ -100,10 +99,10 @@ $publicFunctions | ForEach-Object { # Export all of the public functions from th
     }
 }
 
-$functionsAdded = $publicFunctions | Where-Object {$_.BaseName -notin $currentManifest.ExportedFunctions.Keys}
-$functionsRemoved = $currentManifest.ExportedFunctions.Keys | Where-Object {$_ -notin $publicFunctions.BaseName}
-$aliasesAdded = $aliases | Where-Object {$_ -notin $currentManifest.ExportedAliases.Keys}
-$aliasesRemoved = $currentManifest.ExportedAliases.Keys | Where-Object {$_ -notin $aliases}
+$functionsAdded     = $publicFunctions | Where-Object {$_.BaseName -notin $currentManifest.ExportedFunctions.Keys}
+$functionsRemoved   = $currentManifest.ExportedFunctions.Keys | Where-Object {$_ -notin $publicFunctions.BaseName}
+$aliasesAdded       = $aliases | Where-Object {$_ -notin $currentManifest.ExportedAliases.Keys}
+$aliasesRemoved     = $currentManifest.ExportedAliases.Keys | Where-Object {$_ -notin $aliases}
 
 if ($functionsAdded -or $functionsRemoved -or $aliasesAdded -or $aliasesRemoved) {
 
@@ -132,7 +131,7 @@ $PSM1FileContents | Out-File "$ModuleFolder/$ModuleName.psm1" -Encoding utf8
 $StartupFileContents = @'
 
     #$RequiredFiles = ((Get-Module $ModuleFolder -ListAvailable).Filelist)
-    $RequiredFiles = ((Get-Module $moduleName).Filelist)  ##??
+    $RequiredFiles  = ((Get-Module $moduleName).Filelist)  ##??
         
     $RequiredFiles | % {
         If (-not (Test-Path $_ -Pathtype Leaf)) {
@@ -174,11 +173,11 @@ New-Item -Path "$ModuleFolder\TODO.MD"   -ItemType File -Force | Out-Null
 #------------------------------
 
 #--- Copy a dummy script into modules public functions folder
-$BaseTempFilesPath  = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules/_NewModulesScripts'
+$BaseTempFilesPath  = "$ModBaseFolder\_NewModulesScripts"
 $SourceTestFileList = @()
-$SourceTestFileList += "$BaseTempFilesPath/Convert-EPOCHDateTime.ps1"
-$SourceTestFileList += "$BaseTempFilesPath/ConvertTo-Object.ps1"
-$DestTestFile = "$ModuleFolder\public\Functions"
+$SourceTestFileList += "$BaseTempFilesPath\TestPS1\Convert-EPOCHDateTime.ps1"
+$SourceTestFileList += "$BaseTempFilesPath\TestPS1\ConvertTo-Object.ps1"
+$DestTestFile       = "$ModuleFolder\public\Functions"
 $SourceTestFileList  | ForEach-Object {Copy-Item $_ $DestTestFile }
 
 #---
