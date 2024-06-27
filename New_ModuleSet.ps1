@@ -1,12 +1,13 @@
 
 $DateInfo = Get-Date 
 #---
-$NewModBaseFolder       = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules/Modules'
-
-$ModuleName          = 'MyModules'
+$ModuleName             = 'MyModules'
+$ModBaseFolder          = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules'
+$ModuleFolder           = "$ModBaseFolder\$ModuleName"
 $ModuleDescription      = 'Custom PowerShell tools'
-$NewModFolder           = "$NewModBaseFolder/$ModuleName"
 $Author                 = 'Johnny Leuthard'
+
+
 #---
 $NestedModules = @()
 $NestedModules += 'paPAS'
@@ -29,15 +30,15 @@ $RequiredFilesList += './files/dummy2.json'
 #------------------------------
 #  Create Misc Folders
 #------------------------------
-If(!(Test-Path $NewModFolder ))
+If(!(Test-Path $ModuleFolder ))
 { 
     #write-Host "MOD Folder Missing" -ForegroundColor DarkYellow 
-    New-Item -Path "$NewModFolder"                      -ItemType Directory -Force | Out-Null
-    New-Item -Path "$NewModFolder\en-us"                -ItemType Directory -Force | Out-Null
-    New-Item -Path "$NewModFolder\public\Functions"     -ItemType Directory -Force | Out-Null
-    New-Item -Path "$NewModFolder\private\Functions"    -ItemType Directory -Force | Out-Null
-    New-Item -Path "$NewModFolder\classes"              -ItemType Directory -Force | Out-Null
-    New-Item -Path "$NewModFolder\files"                -ItemType Directory -Force | Out-Null
+    New-Item -Path "$ModuleFolder"                      -ItemType Directory -Force | Out-Null
+    New-Item -Path "$ModuleFolder\en-us"                -ItemType Directory -Force | Out-Null
+    New-Item -Path "$ModuleFolder\public\Functions"     -ItemType Directory -Force | Out-Null
+    New-Item -Path "$ModuleFolder\private\Functions"    -ItemType Directory -Force | Out-Null
+    New-Item -Path "$ModuleFolder\classes"              -ItemType Directory -Force | Out-Null
+    New-Item -Path "$ModuleFolder\files"                -ItemType Directory -Force | Out-Null
     
 }
 
@@ -46,11 +47,11 @@ If(!(Test-Path $NewModFolder ))
 #------------------------------
 $ManafestDetails = @{
     'RootModule'            = $ModuleName
-    'Author'                = 'Johnny Leuthard'
+    'Author'                = $Author
 #    'NestedModules'       = $NestedModules
 #    'RequiredModules'      = $RequiredModules
     'Description'           = $ModuleDescription
-    'Path'                  = "$NewModFolder\$ModuleName.psd1"
+    'Path'                  = "$ModuleFolder\$ModuleName.psd1"
     'ModuleVersion'         = '1.0'
     'GUID'                  = (New-Guid)
     'CompanyName'           = 'Contoso'
@@ -122,7 +123,7 @@ if ($functionsAdded -or $functionsRemoved -or $aliasesAdded -or $aliasesRemoved)
 }
 
 '@
-$PSM1FileContents | Out-File "$NewModFolder/$ModuleName.psm1" -Encoding utf8 
+$PSM1FileContents | Out-File "$ModuleFolder/$ModuleName.psm1" -Encoding utf8 
 
 
 #------------------------------
@@ -130,7 +131,7 @@ $PSM1FileContents | Out-File "$NewModFolder/$ModuleName.psm1" -Encoding utf8
 #------------------------------
 $StartupFileContents = @'
 
-    #$RequiredFiles = ((Get-Module $NewModFolder -ListAvailable).Filelist)
+    #$RequiredFiles = ((Get-Module $ModuleFolder -ListAvailable).Filelist)
     $RequiredFiles = ((Get-Module $moduleName).Filelist)  ##??
         
     $RequiredFiles | % {
@@ -139,16 +140,16 @@ $StartupFileContents = @'
         }
     }
 '@
-$StartupFileContents | Out-File "$NewModFolder\__startup.ps1" -Encoding utf8 -Force
+$StartupFileContents | Out-File "$ModuleFolder\__startup.ps1" -Encoding utf8 -Force
 
 #------------------------------
 #  Create Misc Files
 #------------------------------
 
 #- Basic GIT files
-New-Item -Path "$NewModFolder\readme.MD" -ItemType File -Force | Out-Null
-New-Item -Path "$NewModFolder\TODO.MD"   -ItemType File -Force | Out-Null
-#New-Item -Path "$NewModFolder\.gitignore"   -ItemType File -Force | Out-Null
+New-Item -Path "$ModuleFolder\readme.MD" -ItemType File -Force | Out-Null
+New-Item -Path "$ModuleFolder\TODO.MD"   -ItemType File -Force | Out-Null
+#New-Item -Path "$ModuleFolder\.gitignore"   -ItemType File -Force | Out-Null
 
 #- Test public script
 @'
@@ -157,7 +158,7 @@ New-Item -Path "$NewModFolder\TODO.MD"   -ItemType File -Force | Out-Null
         Write-Host "This is a public finction" -ForegroundColor Green
         Test-ScriptPrivate
     }
-'@ | Out-File "$NewModFolder\Public\Functions\Test-ScriptPublic.ps1" -Force
+'@ | Out-File "$ModuleFolder\Public\Functions\Test-ScriptPublic.ps1" -Force
 
 #- Test private script
 @'
@@ -165,7 +166,7 @@ New-Item -Path "$NewModFolder\TODO.MD"   -ItemType File -Force | Out-Null
     {
         Write-Host "This is a PRIVATE function being called from a public function" -ForegroundColor Green
     }
-'@ | Out-File "$NewModFolder\private\Functions\Test-ScriptPrivate.ps1" -Force
+'@ | Out-File "$ModuleFolder\private\Functions\Test-ScriptPrivate.ps1" -Force
 
 
 #------------------------------
@@ -177,8 +178,8 @@ $BaseTempFilesPath  = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules/
 $SourceTestFileList = @()
 $SourceTestFileList += "$BaseTempFilesPath/Convert-EPOCHDateTime.ps1"
 $SourceTestFileList += "$BaseTempFilesPath/ConvertTo-Object.ps1"
-$DestTestFile = "$NewModFolder\public\Functions"
-$SourceTestFileList  | % {Copy-Item $_ $DestTestFile }
+$DestTestFile = "$ModuleFolder\public\Functions"
+$SourceTestFileList  | ForEach-Object {Copy-Item $_ $DestTestFile }
 
 #---
 
@@ -186,6 +187,24 @@ $SourceTestFileList  | % {Copy-Item $_ $DestTestFile }
 #------------------------------
 #  GIT Stuff
 #------------------------------
-Set-Location $NewModFolder 
-Git INIT
+<#
+
+Set-Location $ModuleFolder 
+Git init 
+git add .
+git commit -m "Initial commit"
+
+#>
+
+
+
+##########################
+### NOTES
+##########################
+<#
+
+https://benheater.com/creating-a-powershell-module
+
+
+#>
 
