@@ -128,10 +128,17 @@ $PSM1FileContents | Out-File "$ModuleFolder/$ModuleName.psm1" -Encoding utf8
 #------------------------------
 #  Create __startup.ps1
 #------------------------------
+<#
+This file gets added to the startup scriups in the PSD1 file and get's run at module load
+It looks at the required files list in the PDS1 and gives an error any of the required files do not exist.
+
+Having prioblems with this that I believe are due to the Module folder needs to be in one of the local folders
+that PowerShell looks at for modules.
+#>
 $StartupFileContents = @'
 
     #$RequiredFiles = ((Get-Module $ModuleFolder -ListAvailable).Filelist)
-    $RequiredFiles  = ((Get-Module $moduleName).Filelist)  ##??
+    $RequiredFiles  = ((Get-Module $moduleName  -ListAvailable).Filelist)  ##??
         
     $RequiredFiles | % {
         If (-not (Test-Path $_ -Pathtype Leaf)) {
@@ -148,7 +155,6 @@ $StartupFileContents | Out-File "$ModuleFolder\__startup.ps1" -Encoding utf8 -Fo
 #- Basic GIT files
 New-Item -Path "$ModuleFolder\readme.MD" -ItemType File -Force | Out-Null
 New-Item -Path "$ModuleFolder\TODO.MD"   -ItemType File -Force | Out-Null
-#New-Item -Path "$ModuleFolder\.gitignore"   -ItemType File -Force | Out-Null
 
 #- Test public script
 @'
@@ -190,8 +196,9 @@ $SourceTestFileList  | ForEach-Object {Copy-Item $_ $DestTestFile }
 
 Set-Location $ModuleFolder 
 Git init 
+New-Item -Path "$ModuleFolder\.gitignore"   -ItemType File -Force | Out-Null
 git add .
-git commit -m "Initial commit"
+git commit -m "1st commit after greating Repo"
 
 #>
 
