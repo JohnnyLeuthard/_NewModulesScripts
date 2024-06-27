@@ -1,19 +1,25 @@
 
 $DateInfo = Get-Date 
 #---
-$NewModBaseFolder       = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules'
-$NewModuleName          = 'MyModules'
+$NewModBaseFolder       = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules/Modules'
+
+$ModuleName          = 'MyModules'
 $ModuleDescription      = 'Custom PowerShell tools'
-$NewModFolder           = "$NewModBaseFolder/$NewModuleName"
+$NewModFolder           = "$NewModBaseFolder/$ModuleName"
 $Author                 = 'Johnny Leuthard'
 #---
 $NestedModules = @()
 $NestedModules += 'paPAS'
 #---
 $RequiredModules = @()
-$RequiredModules += 'MyModules2'
-$RequiredModules += 'PlatyPS'
+#$RequiredModules += 'MyModules2'
 $RequiredModules += 'psPAS'
+$RequiredModules += 'PlatyPS'
+#$RequiredModules += 'PSScriptAnalyzer'
+#$RequiredModules += 'DSC'
+#$RequiredModules += 'P22EXE'
+#$RequiredModules += 'PowershellGet'
+#$RequiredModules += 'PoshInternals'
 #---
 $RequiredFilesList = @()
 $RequiredFilesList += 'dummy.json'
@@ -39,20 +45,21 @@ If(!(Test-Path $NewModFolder ))
 #  Manifest details PSD1
 #------------------------------
 $ManafestDetails = @{
-    'RootModule'            = $NewModuleName
+    'RootModule'            = $ModuleName
     'Author'                = 'Johnny Leuthard'
-#    'NestedModukles'       = $NestedModules
+#    'NestedModules'       = $NestedModules
 #    'RequiredModules'      = $RequiredModules
     'Description'           = $ModuleDescription
-    'Path'                  = "$NewModFolder\$NewModuleName.psd1"
+    'Path'                  = "$NewModFolder\$ModuleName.psd1"
     'ModuleVersion'         = '1.0'
-    'GUID'                  = New-Guid
+    'GUID'                  = (New-Guid)
     'CompanyName'           = 'Contoso'
-    'FileList'             = $RequiredFilesList
-    'ScriptsToProcess'     = '__startup.ps1'
+#    'FileList'             = $RequiredFilesList
+#    'ScriptsToProcess'     = '__startup.ps1'
 #    'DefaultCommandPrefix'  = 'JEL'
 #    'AliasesToExport'       = '*'
-    'CLRVersion'            = '5.1'
+#    'CLRVersion'            = '4.0'
+    'PowerShellVersion'    = '5.1'
     'Copyright'             = (($DateInfo.year).tostring() + ' '  + $ModuleDescription + ' by ' +  $Author)
 }
 New-ModuleManifest @ManafestDetails
@@ -115,7 +122,7 @@ if ($functionsAdded -or $functionsRemoved -or $aliasesAdded -or $aliasesRemoved)
 }
 
 '@
-$PSM1FileContents | Out-File "$NewModFolder/$NewModuleName.psm1" -Encoding utf8 
+$PSM1FileContents | Out-File "$NewModFolder/$ModuleName.psm1" -Encoding utf8 
 
 
 #------------------------------
