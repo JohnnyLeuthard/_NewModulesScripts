@@ -71,25 +71,26 @@ $PSM1FileContents = @'
 # Set a Global variable (used for testing, validation, etc.)
 Set-Variable -Name TestGlobalVar -Value "This is a test 1...2...3" -Scope Global
 
-# Use this to manualy test. Should use $PSSCriptRoot but this can override for testing
-$TestingFolder = $PSScriptRoot
-#$TestingFolder = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules/MyModules'
-
+#write-Host "PSScriptRoot path is: $PSScriptRoot" -ForegroundColor Green
 # Dynamicly determine Module Name
-$directorySeparator     = [System.IO.Path]::DirectorySeparatorChar
-$moduleName             = $TestingFolder.Split($directorySeparator)[-1]
+$directorySeparator = [System.IO.Path]::DirectorySeparatorChar
+$moduleName = $PSScriptRoot.Split($directorySeparator)[-1]
 #-- Manifest file name
-$moduleManifest         = $TestingFolder + $directorySeparator + $moduleName + '.psd1'
+$moduleManifest = $PSScriptRoot + $directorySeparator + $moduleName + '.psd1'
 #-- Public functions folder path
-$publicFunctionsPath    = $TestingFolder + $directorySeparator + 'Public' + $directorySeparator + 'Functions'
+$publicFunctionsPath    = $PSScriptRoot + $directorySeparator + 'Public' + $directorySeparator + 'Functions'
 #-- Private functions folder path
-$privateFunctionsPath   = $TestingFolder + $directorySeparator + 'Private' + $directorySeparator + 'Functions'
+$privateFunctionsPath   = $PSScriptRoot + $directorySeparator + 'Private' + $directorySeparator + 'Functions'
 $currentManifest        = Test-ModuleManifest $moduleManifest
 
 # Get list of PS1 files in the functions folders (files atrating with __ get ignored)
 $aliases = @()  ##??
-$publicFunctions  = Get-ChildItem -Path $publicFunctionsPath -Recurse  | Where-Object { ($_Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
-$privateFunctions = Get-ChildItem -Path $privateFunctionsPath -Recurse | Where-Object { ($_Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
+$publicFunctions  = Get-ChildItem -Path $publicFunctionsPath -Recurse  | Where-Object { ($_.Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
+$privateFunctions = Get-ChildItem -Path $privateFunctionsPath -Recurse | Where-Object { ($_.Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
+#$publicFunctions  = Get-ChildItem -Path $publicFunctionsPath  | Where-Object {$_.Extension -eq '.ps1'}
+#$privateFunctions = Get-ChildItem -Path $privateFunctionsPath | Where-Object {$_.Extension -eq '.ps1'}
+#-- DOT source scripts
+$PublicFunctions | ForEach-Object { . $_.FullName }
 $privateFunctions | ForEach-Object { . $_.FullName }
 
 # Export all of the public functions from this module
@@ -112,17 +113,15 @@ $functionsRemoved   = $currentManifest.ExportedFunctions.Keys | Where-Object {$_
 $aliasesAdded       = $aliases | Where-Object {$_ -notin $currentManifest.ExportedAliases.Keys}
 $aliasesRemoved     = $currentManifest.ExportedAliases.Keys | Where-Object {$_ -notin $aliases}
 
-# If there are aliases or public functions added/removed update the manifest
+# If there are aliases or public functions added/removed update the manifest with those changes
 if ($functionsAdded -or $functionsRemoved -or $aliasesAdded -or $aliasesRemoved) {
-
     try {
-
         $updateModuleManifestParams = @{}
         $updateModuleManifestParams.Add('Path', $moduleManifest)
         $updateModuleManifestParams.Add('ErrorAction', 'Stop')
         if ($aliases.Count -gt 0) { $updateModuleManifestParams.Add('AliasesToExport', $aliases) }
         if ($publicFunctions.Count -gt 0) { $updateModuleManifestParams.Add('FunctionsToExport', $publicFunctions.BaseName) }
-
+        # Update manifest (PSD1) file
         Update-ModuleManifest @updateModuleManifestParams
     }
     catch {
@@ -202,17 +201,28 @@ $SourceTestFileList  | ForEach-Object {Copy-Item $_ $DestTestFile }
 #  GIT Stuff
 #------------------------------
 <#
+#-- change to the module folder
+Set-Location $ModuleFolder 
 
+#-- various MD files
 New-Item -Path "$ModuleFolder\readme.MD" -ItemType File -Force | Out-Null
 New-Item -Path "$ModuleFolder\TODO.MD"   -ItemType File -Force | Out-Null
 
-Set-Location $ModuleFolder 
+#-- GitIgnore file
+@'
+
+'@ | Out-File "$ModuleFolder\.gitignore" | Out-Null
+
+#-- setup GIT
 Git init 
-New-Item -Path "$ModuleFolder\.gitignore"   -ItemType File -Force | Out-Null
 git add .
 git commit -m "1st commit after greating Repo"
 
+##?? Publish?
+
 #>
+
+
 
 
 
