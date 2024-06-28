@@ -53,6 +53,8 @@ New-MarkdownHelp -Module $ModuleName -OutputFolder $MDFilePath -Force
 #**** OR ***
 #- Create MD file for an individule command
 New-MarkdownHelp -Command Convert-EPOCHDateTime -OutputFolder $MDFilePath -Force
+New-MarkdownHelp -Command Get-SPN -OutputFolder $MDFilePath -Force
+
 
 
 ########################################################
@@ -79,6 +81,7 @@ Get-Module
 Update-MarkdownHelp -Path $MDFilePath -Force  ##??
 # OR a single file
 Update-MarkdownHelp -Path "$MDFilePath\Convert-EPOCHDateTime.md"
+Update-MarkdownHelp -Path "$MDFilePath\Get-SPN.md"
 
 
 

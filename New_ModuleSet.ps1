@@ -37,8 +37,7 @@ If(!(Test-Path $ModuleFolder ))
     New-Item -Path "$ModuleFolder\public\Functions"     -ItemType Directory -Force | Out-Null
     New-Item -Path "$ModuleFolder\private\Functions"    -ItemType Directory -Force | Out-Null
     New-Item -Path "$ModuleFolder\classes"              -ItemType Directory -Force | Out-Null
-    New-Item -Path "$ModuleFolder\files"                -ItemType Directory -Force | Out-Null
-    
+    New-Item -Path "$ModuleFolder\files"                -ItemType Directory -Force | Out-Null 
 }
 
 #------------------------------
@@ -72,21 +71,29 @@ $PSM1FileContents = @'
 # Set a Global variable (used for testing, validation, etc.)
 Set-Variable -Name TestGlobalVar -Value "This is a test 1...2...3" -Scope Global
 
-# Dynbamicly determine Module Name
+# Use this to manualy test. Should use $PSSCriptRoot but this can override for testing
+$TestingFolder = $PSScriptRoot
+#$TestingFolder = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules/MyModules'
+
+# Dynamicly determine Module Name
 $directorySeparator     = [System.IO.Path]::DirectorySeparatorChar
-$moduleName             = $PSScriptRoot.Split($directorySeparator)[-1]
-$moduleManifest         = $PSScriptRoot + $directorySeparator + $moduleName + '.psd1'
-$publicFunctionsPath    = $PSScriptRoot + $directorySeparator + 'Public' + $directorySeparator + 'Functions'
-$privateFunctionsPath   = $PSScriptRoot + $directorySeparator + 'Private' + $directorySeparator + 'Functions'
+$moduleName             = $TestingFolder.Split($directorySeparator)[-1]
+#-- Manifest file name
+$moduleManifest         = $TestingFolder + $directorySeparator + $moduleName + '.psd1'
+#-- Public functions folder path
+$publicFunctionsPath    = $TestingFolder + $directorySeparator + 'Public' + $directorySeparator + 'Functions'
+#-- Private functions folder path
+$privateFunctionsPath   = $TestingFolder + $directorySeparator + 'Private' + $directorySeparator + 'Functions'
 $currentManifest        = Test-ModuleManifest $moduleManifest
 
-$aliases = @()
-$publicFunctions        = Get-ChildItem -Path $GLOBAL:publicFunctionsPath -Recurse | Where-Object { ($_Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
-$privateFunctions       = Get-ChildItem -Path $privateFunctionsPath -Recurse | Where-Object { ($_Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
-$publicFunctions | ForEach-Object { . $_.FullName }
+# Get list of PS1 files in the functions folders (files atrating with __ get ignored)
+$aliases = @()  ##??
+$publicFunctions  = Get-ChildItem -Path $publicFunctionsPath -Recurse  | Where-Object { ($_Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
+$privateFunctions = Get-ChildItem -Path $privateFunctionsPath -Recurse | Where-Object { ($_Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
 $privateFunctions | ForEach-Object { . $_.FullName }
 
-$publicFunctions | ForEach-Object { # Export all of the public functions from this module
+# Export all of the public functions from this module
+$publicFunctions | ForEach-Object { 
 
     # The command has already been sourced in above. Query any defined aliases.
     $alias = Get-Alias -Definition $_.BaseName -ErrorAction SilentlyContinue
@@ -99,11 +106,13 @@ $publicFunctions | ForEach-Object { # Export all of the public functions from th
     }
 }
 
+# Get list of ublic functions/alises losted in manifest and add/remove changes
 $functionsAdded     = $publicFunctions | Where-Object {$_.BaseName -notin $currentManifest.ExportedFunctions.Keys}
 $functionsRemoved   = $currentManifest.ExportedFunctions.Keys | Where-Object {$_ -notin $publicFunctions.BaseName}
 $aliasesAdded       = $aliases | Where-Object {$_ -notin $currentManifest.ExportedAliases.Keys}
 $aliasesRemoved     = $currentManifest.ExportedAliases.Keys | Where-Object {$_ -notin $aliases}
 
+# If there are aliases or public functions added/removed update the manifest
 if ($functionsAdded -or $functionsRemoved -or $aliasesAdded -or $aliasesRemoved) {
 
     try {
@@ -153,8 +162,6 @@ $StartupFileContents | Out-File "$ModuleFolder\__startup.ps1" -Encoding utf8 -Fo
 #------------------------------
 
 #- Basic GIT files
-New-Item -Path "$ModuleFolder\readme.MD" -ItemType File -Force | Out-Null
-New-Item -Path "$ModuleFolder\TODO.MD"   -ItemType File -Force | Out-Null
 
 #- Test public script
 @'
@@ -183,6 +190,8 @@ $BaseTempFilesPath  = "$ModBaseFolder\_NewModulesScripts"
 $SourceTestFileList = @()
 $SourceTestFileList += "$BaseTempFilesPath\TestPS1\Convert-EPOCHDateTime.ps1"
 $SourceTestFileList += "$BaseTempFilesPath\TestPS1\ConvertTo-Object.ps1"
+$SourceTestFileList += "$BaseTempFilesPath\TestPS1\Get-SPN.ps1"
+
 $DestTestFile       = "$ModuleFolder\public\Functions"
 $SourceTestFileList  | ForEach-Object {Copy-Item $_ $DestTestFile }
 
@@ -193,6 +202,9 @@ $SourceTestFileList  | ForEach-Object {Copy-Item $_ $DestTestFile }
 #  GIT Stuff
 #------------------------------
 <#
+
+New-Item -Path "$ModuleFolder\readme.MD" -ItemType File -Force | Out-Null
+New-Item -Path "$ModuleFolder\TODO.MD"   -ItemType File -Force | Out-Null
 
 Set-Location $ModuleFolder 
 Git init 

@@ -1,47 +1,47 @@
 
-
 Function Convert-EPOCHDateTime
 {
-  <#
-  .SYNOPSIS
-    Convert EPOCH time - this should not display
-  .DESCRIPTION
-    Convert EPOCH time to local time
+<#
+  .Synopsis
+    Converts Unix EPOCH time to a human readable date
+  .description
+    Converts Unix EPOCH time to a human readable date displaying in format of severl different time zones
+
   .Parameter InputTime
     The EPOCH time to convert
+    
+  .Example
+    Convert-EPOCHDateTime -InputTime 999999094
 
-  .Parameter UpdatedParam
-    Testing update MD
+    InputTime LocalTimezone         LocalTime           UTCTime
+    --------- -------------         ---------           -------
+    999999094 Eastern Standard Time 9/8/2001 9:31:34 PM 9/9/2001 1:31:34 AM
 
-  .EXAMPLE
-    Convert-EPOCHDateTime -InputTime -9147600
 
-    Converts Unix EPOCH time -9147600 to a human readable date
-
-  .EXAMPLE
+  .Example
     -9147600,1539613448,1529604105 | Convert-EPOCHDateTime
 
-  .INPUTS
+    InputTime LocalTimezone         LocalTime              UTCTime
+    --------- -------------         ---------              -------
+      -9147600 Eastern Standard Time 9/16/1969 11:00:00 PM  9/17/1969 3:00:00 AM
+      1539613448 Eastern Standard Time 10/15/2018 10:24:08 AM 10/15/2018 2:24:08 PM
+      1529604105 Eastern Standard Time 6/21/2018 2:01:45 PM   6/21/2018 6:01:45 PM
 
-  .OUTPUTS
-    PSObject
 
-  .LINK
-    https://github.com/JohnnyLeuthard/_NewModulesScripts/blob/main/Convert-EPOCHDateTime.MD
-
-  .NOTES
+  .Link
+    https://github.com/JohnnyLeuthard/MyModules/blob/main/en-us/MD/Convert-EPOCHDateTime.md
+  .Notes
     Author: Johnny Leuthard
 
 #>
-  [CmdletBinding(SupportsShouldProcess,DefaultParameterSetName = 'None')]
-  Param
+[CmdletBinding(SupportsShouldProcess,DefaultParameterSetName = 'All')]
+Param
   (
-    [Parameter(Position=0, ValueFromPipeline, Mandatory)]
+    [Parameter(Position = 0, ValueFromPipeline, Mandatory,ParameterSetName='All')]
+    [Parameter(ValueFromPipeline,ParameterSetName='TEMP')]
     [ValidateNotNullOrEmpty()]
-      $InputTime,
-    [Parameter(ValueFromPipeline)]
-      $UpdatedParam
-    
+      $InputTime
+      
   )
   Begin
   {
@@ -75,4 +75,5 @@ Function Convert-EPOCHDateTime
 Convert-EPOCHDateTime -InputTime '1636112341'
 
 #>
+
 
