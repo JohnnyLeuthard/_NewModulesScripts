@@ -69,6 +69,18 @@ $AboutFileName += 'DummyAboutFile'
 $AboutFileName += $ModuleName 
 $AboutFileName | ForEach-Object {New-MarkdownAboutHelp -OutputFolder $MDFilePath -AboutName $_ }
 
+########################################################
+### Update MD help files
+########################################################
+Remove-Module $ModuleName
+Import-Module $ModuleFolder
+Get-Module
+
+Update-MarkdownHelp -Path $MDFilePath -Force  ##??
+# OR a single file
+Update-MarkdownHelp -Path "$MDFilePath\Convert-EPOCHDateTime.md"
+
+
 
 ########################################################
 ### create an external help file  (XML) from MD
@@ -85,17 +97,6 @@ New-ExternalHelp -Path "$MDFilePath\Convert-EPOCHDateTime.md" -OutputPath $Outpu
 New-ExternalHelp -Path "$MDFilePath" -OutputPath $OutputPath
 
 
-
-########################################################
-### Update MD help files
-########################################################
-Remove-Module $ModuleName
-Import-Module $ModuleFolder
-Get-Module
-
-Update-MarkdownHelp -Path $MDFilePath -Force  ##??
-# OR a single file
-Update-MarkdownHelp -Path "$MDFilePath\Convert-EPOCHDateTime.md"
 
 
 
