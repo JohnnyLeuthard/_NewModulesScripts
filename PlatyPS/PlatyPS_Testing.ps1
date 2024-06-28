@@ -5,11 +5,18 @@ $ModBaseFolder  = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules'
 $ModuleFolder   = "$ModBaseFolder\$ModuleName"
 
 Set-Location $ModuleFolder
-############################
-#--- Install PlatyPS
-#  Install-Module platyPS -Force
+########################################################
+# Install PlatyPS
+########################################################
+<#
+Only needs to be run once and can be instlled by scope as well
+#>
+Install-Module platyPS -Force
 
-# List of modules tO import
+
+########################################################
+# List of modules to import
+########################################################
 $ModuleList = @()
 $ModuleList += $ModuleFolder
 $ModuleList += 'PlatyPS'
@@ -27,7 +34,7 @@ Clear-Host; Remove-Module $ModuleName; Import-Module $ModuleFolder
 Get-Module 
 Get-Command -Module $ModuleName 
 
-########################################################
+
 
 ########################################################
 ### Create/Modify MD files from comment based help
@@ -47,16 +54,6 @@ New-MarkdownHelp -Module $ModuleName -OutputFolder $MDFilePath -Force
 #- Create MD file for an individule command
 New-MarkdownHelp -Command Convert-EPOCHDateTime -OutputFolder $MDFilePath -Force
 
-
-#--- Update MD's
-Remove-Module $ModuleName
-Import-Module $ModuleFolder
-Get-Module
-
-Update-MarkdownHelp -Path $MDFilePath -Force  ##??
-
-
-########################################################
 
 ########################################################
 ### XML help from MD files
@@ -90,10 +87,15 @@ New-ExternalHelp -Path "$MDFilePath" -OutputPath $OutputPath
 
 
 ########################################################
-### 
+### Update MD help files
 ########################################################
+Remove-Module $ModuleName
+Import-Module $ModuleFolder
+Get-Module
 
-
+Update-MarkdownHelp -Path $MDFilePath -Force  ##??
+# OR a single file
+Update-MarkdownHelp -Path "$MDFilePath\Convert-EPOCHDateTime.md"
 
 
 
