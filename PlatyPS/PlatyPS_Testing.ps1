@@ -39,6 +39,10 @@ Get-Command -Module $ModuleName
 ########################################################
 ### Create/Modify MD files from comment based help
 ########################################################
+<#
+    Module may need to be loaded 1st if it is not in one the default module folders
+#>
+# $ModuleDetails  = (Get-Module -ListAvailable $ModuleName)
 $ModuleDetails  = (Get-Module $ModuleName)
 $ModulePath     = $ModuleDetails.ModuleBase
 
@@ -72,7 +76,7 @@ $AboutFileName += $ModuleName
 $AboutFileName | ForEach-Object {New-MarkdownAboutHelp -OutputFolder $MDFilePath -AboutName $_ }
 
 ########################################################
-### Update MD help files
+### Update MD help files  *******
 ########################################################
 Remove-Module $ModuleName
 Import-Module $ModuleFolder
@@ -80,13 +84,13 @@ Get-Module
 
 Update-MarkdownHelp -Path $MDFilePath -Force  ##??
 # OR a single file
-Update-MarkdownHelp -Path "$MDFilePath\Convert-EPOCHDateTime.md"
 Update-MarkdownHelp -Path "$MDFilePath\Get-SPN.md"
+Update-MarkdownHelp -Path "$MDFilePath\Convert-EPOCHDateTime.md"
 
 
 
 ########################################################
-### create an external help file  (XML) from MD
+### create an master external help file  (XML) from MD
 ########################################################
 <#
     When using get-help this will override the comment based help 
