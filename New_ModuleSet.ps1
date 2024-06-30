@@ -2,6 +2,7 @@
 $DateInfo = Get-Date 
 #---
 $ModuleName             = 'MyModules'
+#$ModuleName             = 'MyModules2'
 $ModBaseFolder          = '\Users\johnnyleuthard\Clouds\OneDrive\Coding\POSHModules'
 $ModuleFolder           = "$ModBaseFolder\$ModuleName"
 $ModuleDescription      = 'Custom PowerShell tools'
