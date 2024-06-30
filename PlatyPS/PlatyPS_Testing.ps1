@@ -1,29 +1,36 @@
 ﻿
 
 $ModuleName     = 'MyModules'
+#$ModuleName     = 'MyModules2'
 $ModBaseFolder  = '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules'
 $ModuleFolder   = "$ModBaseFolder\$ModuleName"
 
 Set-Location $ModuleFolder
 ########################################################
-# Install PlatyPS
+# Install Modules 
 ########################################################
 <#
 Only needs to be run once and can be instlled by scope as well
 #>
-Install-Module platyPS -Force
+$ModulesToInstall = @()
+$ModulesToInstall += 'MarkdownLinkCheck'
+$ModulesToInstall += 'platyPS'
+$ModulesToInstall += 'NuGet'
+
+Install-Module $ModulesToInstall -Force
 
 
 ########################################################
 # List of modules to import
 ########################################################
 $ModuleList = @()
-$ModuleList += $ModuleFolder
-$ModuleList += 'PlatyPS'
+$ModuleList += $ModuleFolder      # The location of the modules created using the 'New_ModuleSet.ps1' code
+$ModuleList += $ModulesToInstall  # All the modules just installed from above
 
-Import-Module $ModuleList
+# Load / reload all modules
+Import-Module $ModuleList -Force  
 #- OR
-Clear-Host;Remove-Module $ModuleName; Import-Module $ModuleFolder
+Clear-Host;Remove-Module $ModuleName; Import-Module $ModuleFolder  
 
 Get-Module 
 ############################
@@ -56,9 +63,9 @@ $XMLFilePath    = "$OutputPath\XML"
 New-MarkdownHelp -Module $ModuleName -OutputFolder $MDFilePath -Force 
 #**** OR ***
 #- Create MD file for an individule command
-New-MarkdownHelp -Command Convert-EPOCHDateTime -OutputFolder $MDFilePath -Force
+#New-MarkdownHelp -Command Convert-EPOCHDateTime -OutputFolder $MDFilePath -Force
+New-MarkdownHelp -Command Set-POSHTemplate -OutputFolder $MDFilePath -Force
 New-MarkdownHelp -Command Get-SPN -OutputFolder $MDFilePath -Force
-
 
 
 ########################################################
@@ -86,6 +93,9 @@ Update-MarkdownHelp -Path $MDFilePath -Force  ##??
 # OR a single file
 Update-MarkdownHelp -Path "$MDFilePath\Get-SPN.md"
 Update-MarkdownHelp -Path "$MDFilePath\Convert-EPOCHDateTime.md"
+
+
+
 
 
 
