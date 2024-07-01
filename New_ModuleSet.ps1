@@ -180,6 +180,28 @@ $StartupFileContents | Out-File "$ModuleFolder\__startup.ps1" -Encoding utf8 -Fo
     }
 '@ | Out-File "$ModuleFolder\private\Functions\Test-ScriptPrivate.ps1" -Force
 
+#- Example class
+@'
+
+class car
+{
+    [string]$vin
+    static [int]$numberofWheeles = 4
+    [int]$NumberOfDoors
+    [datetime]$year
+    [string]$model
+    [string]$color
+
+    paint ([string]$paint)
+    {
+        $this.color = $paint
+        Write-Host "New car color is $paint" -ForegroundColor $paint
+    }
+    
+}
+
+'@ | Out-File "$ModuleFolder\classes\ClassCar.ps1" -Force
+
 
 #------------------------------
 #  Misc stuff
