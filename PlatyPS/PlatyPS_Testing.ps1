@@ -63,8 +63,8 @@ $XMLFilePath    = "$OutputPath\XML"
 New-MarkdownHelp -Module $ModuleName -OutputFolder $MDFilePath -Force 
 #**** OR ***
 #- Create MD file for an individule command
-#New-MarkdownHelp -Command Convert-EPOCHDateTime -OutputFolder $MDFilePath -Force
-New-MarkdownHelp -Command Set-POSHTemplate -OutputFolder $MDFilePath -Force
+New-MarkdownHelp -Command Convert-EPOCHDateTime -OutputFolder $MDFilePath -Force
+#New-MarkdownHelp -Command Test-POSHTemplate -OutputFolder $MDFilePath -Force
 New-MarkdownHelp -Command Get-SPN -OutputFolder $MDFilePath -Force
 
 
