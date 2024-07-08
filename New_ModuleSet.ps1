@@ -192,6 +192,14 @@ class car
     [string]$model
     [string]$color
 
+    car(){}
+
+    car($model,$year){
+        $this.model = $model
+        $this.year  = $year
+    }
+
+    
     paint ([string]$paint)
     {
         $this.color = $paint

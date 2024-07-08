@@ -1,0 +1,27 @@
+
+
+$moduleName = 'MyModules'
+
+Clear-Host
+Remove-Module $ModuleName
+Import-Module '/sers/johnnyleuthard/Clouds/OneDrive/Coding/POSHModules/MyModules'
+
+Get-Module
+Get-Command -Module $moduleName 
+
+#######
+<#
+
+Get-Module 
+
+Get-Command -Module $ModuleName 
+
+(Get-Module $moduleName)
+(Get-Module $moduleName) | fl *
+(Get-Module $moduleName).Filelist
+
+Remove-Module __startup
+
+
+#>
+
