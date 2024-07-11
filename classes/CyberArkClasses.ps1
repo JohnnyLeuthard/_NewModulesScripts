@@ -1,20 +1,39 @@
 
+
 class ccpcall {
 
-    [string]$SafeName;
     [Parameter(ParameterSetName = 'All',HelpMessage = "Your CCP AppID")]
 		[string]$AppID;
-    [string]$CCPHost;
+    [Parameter(ParameterSetName = 'All',HelpMessage = "Your CCP AppID")]
+        [string]$CCPHost;
     [Parameter(ParameterSetName = 'All',HelpMessage = "CCP Port")]
     [ValidateSet('443', '8443')]
         [string]$CCPPort = '8443';
-    [string]$Username;
-    [string]$Address;
-    [string]$PolicyID;
-    [string]$Reason;
-    [string]$StringToDisplay;
-    [string]$AuthType;
+    #[Parameter(ParameterSetName = 'All')]
+	#    [string]$BaseURL;   
+
+    [Parameter(ParameterSetName = 'All')]
+	    [string]$SafeName;
+    [Parameter(ParameterSetName = 'All')]
+	    [string]$ObjectName;
     
+
+    [Parameter(ParameterSetName = 'All')]
+        [string]$Username;
+    [Parameter(ParameterSetName = 'All')]
+        [string]$Address;
+    [Parameter(ParameterSetName = 'All')]
+        [string]$Reason;
+    
+    [Parameter(ParameterSetName = 'All')]
+        [string]$PolicyID;
+    [Parameter(ParameterSetName = 'All')]
+        [string]$StringToDisplay;
+    
+    [Parameter(ParameterSetName = 'All')]
+        [string]$AuthType;
+
+        
 
     ccpcall () {}
 
@@ -33,6 +52,8 @@ class ccpcall {
 
     #>
     
+    $BaseURL = ($CCPHost + ':' + $CCPPort)
+
 }
 
 
@@ -41,11 +62,25 @@ class certauth : ccpcall {
     ##static [string]$AuthType = "userauth"
     [string]$certAuthVar;
     [string]$Thumbprint;
+    [string]$AuthType = 'CertAuth';
+      
     
-    
-
     certauth(){
+    
         $this.authtype = "CertAuth"
+    }
+
+
+    certauth($appID,$CCPHost,$CCPPort,$UserName,$Address,$Reason,$Thumbprint) {
+        $this.AppID         = $appID
+        $this.CCPHost       = $CCPHost
+        $this.CCPPort       = $CCPPort
+        $this.Username      = $UserName
+        $this.Address       = $Address
+        $this.Reason        = $Reason
+        $this.Thumbprint    = $Thumbprint
+
+        $this.AuthType      = 'Cert Auth Type'
     }
 
 }
@@ -76,7 +111,7 @@ class userauth : ccpcall {
         $this.Address = $Address
         $this.Reason = $Reason
         
-        $this.UserAuthVar = 'User Auth'
+        $this.UserAuthVar = 'User Auth Type'
 
     }
 
@@ -90,6 +125,10 @@ class userauth : ccpcall {
 
 $a = [certauth]::new()
 $a = [certauth]::new("MyAppID")
+$a = [certauth]::new("MyAppID","CCPServer1",'443','MyUserID','MyAddress','TESTING custom class')
+$a = [certauth]::new("MyAppID","CCPServer1",'443','MyUserID','MyAddress','TESTING custom class','1D6F4B2C4D4B1D6F4B2C4D4B1D6F4B2C4D4B')
+$a = [certauth]::new("MyAppID","CCPServer1",'8443','MyUserID','MyAddress','TESTING custom class','1D6F4B2C4D4B1D6F4B2C4D4B1D6F4B2C4D4B')
+
 
 $a = [userauth]::new()
 $a = [userauth]::new("MyAppID")
@@ -112,6 +151,7 @@ $a.CCPPort = '443'
 $a.StringToDisplay = 'My String"  
 
 $a.gettype()
+$a.gettype() | fl * 
 
 $a.test
 $a.test("my string")
