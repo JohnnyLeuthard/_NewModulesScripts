@@ -84,7 +84,13 @@ $publicFunctionsPath    = $PSScriptRoot + $directorySeparator + 'Public' + $dire
 $privateFunctionsPath   = $PSScriptRoot + $directorySeparator + 'Private' + $directorySeparator + 'Functions'
 $currentManifest        = Test-ModuleManifest $moduleManifest
 
-# Get list of PS1 files in the functions folders (files atrating with __ get ignored)
+# Import Settings file  ##?? (set this to script scope not global? )
+$dataPath = Join-Path -Path $PSScriptRoot -ChildPath Settings.psd1
+#$global:SettingsHashtable = Import-PowerShellDataFile -Path $dataPath ##??
+$script:SettingsHashtable = Import-PowerShellDataFile -Path $dataPath ##??
+
+
+# Get list of PS1 files in the functions folders (files atrating with __ will be ignored)
 $aliases = @()  ##??
 $publicFunctions  = Get-ChildItem -Path $publicFunctionsPath -Recurse  | Where-Object { ($_.Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
 $privateFunctions = Get-ChildItem -Path $privateFunctionsPath -Recurse | Where-Object { ($_.Name -notlike "__*") -and ($_.Extension -eq '.ps1')}
@@ -93,6 +99,7 @@ $privateFunctions = Get-ChildItem -Path $privateFunctionsPath -Recurse | Where-O
 #-- DOT source scripts
 $PublicFunctions | ForEach-Object { . $_.FullName }
 $privateFunctions | ForEach-Object { . $_.FullName }
+
 
 # Export all of the public functions from this module
 $publicFunctions | ForEach-Object { 
@@ -129,6 +136,9 @@ if ($functionsAdded -or $functionsRemoved -or $aliasesAdded -or $aliasesRemoved)
         $_ | Write-Error
     }
 }
+
+# Load classes
+#". $PSScriptRoot/Clases/ClassCar.ps1"
 
 '@
 $PSM1FileContents | Out-File "$ModuleFolder/$ModuleName.psm1" -Encoding utf8 
@@ -211,9 +221,6 @@ class car
 '@ | Out-File "$ModuleFolder\classes\ClassCar.ps1" -Force
 
 
-#------------------------------
-#  Misc stuff
-#------------------------------
 
 #--- Copy a dummy script into modules public functions folder
 $BaseTempFilesPath  = "$ModBaseFolder\_NewModulesScripts"
@@ -225,8 +232,50 @@ $SourceTestFileList += "$BaseTempFilesPath\TestPS1\Get-SPN.ps1"
 $DestTestFile       = "$ModuleFolder\public\Functions"
 $SourceTestFileList  | ForEach-Object {Copy-Item $_ $DestTestFile }
 
+
+
+#------------------------------
+#  Create a settings PSD1 setup
+#------------------------------
+
+@{
+    # paths to important folders
+    dataInPath = 'c:\data1', '\\server2\public\data'
+    dataOutPath = '\\server99\public\results'
+    dataLogPath = 'f:\local\log'
+
+    # AD groups 
+    dataGroups = 'Technicians', 'Testers', 'Auditors'
+
+    # miscellaneaous settings
+    dataTimeoutSeconds = 5400
+    dataLogLevel = 4
+
+    dataJohnnyTest = '1234'
+} | Out-File '/Users/johnnyleuthard/Clouds/OneDrive/Coding/POSH-TEMPLATE/MyModules/settings.psd1'
+
 #---
 
+#------------------------------
+#  Create Settings.psd1
+#------------------------------
+@'
+@{
+    # paths to important folders
+    dataInPath = 'c:\data1', '\\server2\public\data'
+    dataOutPath = '\\server99\public\results'
+    dataLogPath = 'f:\local\log'
+
+    # AD groups 
+    dataGroups = 'Technicians', 'Testers', 'Auditors'
+
+    # miscellaneaous settings
+    dataTimeoutSeconds = 5400
+    dataLogLevel = 4
+
+    dataJohnnyTest = '1234'
+} 
+'@ | Out-File $ModuleFolder\Settings.psd1
 
 #------------------------------
 #  GIT Stuff
