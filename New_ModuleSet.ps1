@@ -89,6 +89,9 @@ $dataPath = Join-Path -Path $PSScriptRoot -ChildPath Settings.psd1
 #$global:SettingsHashtable = Import-PowerShellDataFile -Path $dataPath ##??
 $script:SettingsHashtable = Import-PowerShellDataFile -Path $dataPath ##??
 
+# Another load settings
+$SettingsFile = "$PSScriptRoot\files\environmant.psd1"
+$Script:ScriptSettings = Import-PowerShellDataFile -Path $SettingsFile
 
 # Get list of PS1 files in the functions folders (files atrating with __ will be ignored)
 $aliases = @()  ##??
@@ -220,7 +223,22 @@ class car
 
 '@ | Out-File "$ModuleFolder\classes\ClassCar.ps1" -Force
 
+#- Example Setings
+@'
 
+    @{
+        'ENVProd' = @{
+            This = $true
+            That = $false
+        }@
+        'ENVUAT' = @{
+            This = $false
+            That = $true
+        }@
+
+        AnotherSetting = '1234'
+
+'@ | Out-File "$ModuleFolder\Files\settings.psd1" -Force
 
 #--- Copy a dummy script into modules public functions folder
 $BaseTempFilesPath  = "$ModBaseFolder\_NewModulesScripts"
